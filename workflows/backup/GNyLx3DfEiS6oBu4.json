@@ -1,5 +1,5 @@
 {
-  "active": false,
+  "active": true,
   "connections": {
     "/": {
       "main": [
@@ -262,7 +262,7 @@
   "meta": {
     "templateCredsSetupCompleted": true
   },
-  "name": "My workflow 4",
+  "name": "Github Workflow Backup",
   "nodes": [
     {
       "parameters": {},
@@ -563,6 +563,7 @@
         "rule": {
           "interval": [
             {
+              "daysInterval": 2,
               "triggerAtHour": 7
             }
           ]
@@ -830,7 +831,11 @@
   "settings": {
     "executionOrder": "v1"
   },
-  "staticData": null,
+  "staticData": {
+    "node:Schedule Trigger": {
+      "recurrenceRules": []
+    }
+  },
   "tags": [
     {
       "createdAt": "2025-07-28T09:48:56.852Z",
@@ -839,7 +844,7 @@
       "name": "backup"
     }
   ],
-  "triggerCount": 0,
-  "updatedAt": "2025-07-28T11:37:11.000Z",
-  "versionId": "c4536695-1132-4dd8-8df0-b8fc95beaf58"
+  "triggerCount": 1,
+  "updatedAt": "2025-07-28T11:44:55.000Z",
+  "versionId": "bae4592d-ff7c-445f-a8d7-610834f8e674"
 }
