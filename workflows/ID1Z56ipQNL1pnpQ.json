@@ -199,7 +199,7 @@
   },
   "createdAt": "2025-07-26T13:10:09.187Z",
   "id": "ID1Z56ipQNL1pnpQ",
-  "isArchived": false,
+  "isArchived": true,
   "meta": null,
   "name": "GitHub Workflow Backup",
   "nodes": [
@@ -493,6 +493,6 @@
   "staticData": null,
   "tags": [],
   "triggerCount": 0,
-  "updatedAt": "2025-07-26T13:24:06.000Z",
-  "versionId": "6e27f251-4e0a-45c4-9b0c-3512027f78b1"
+  "updatedAt": "2025-07-28T11:42:07.000Z",
+  "versionId": "41af5303-43c4-4506-a3cc-ab9958e76b9d"
 }
