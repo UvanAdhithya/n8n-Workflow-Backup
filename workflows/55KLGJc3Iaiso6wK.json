@@ -1,0 +1,77 @@
+{
+  "active": false,
+  "connections": {
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "Message a model",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "createdAt": "2025-07-23T11:20:01.485Z",
+  "id": "55KLGJc3Iaiso6wK",
+  "isArchived": false,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "name": "My workflow",
+  "nodes": [
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "b511ab9c-3a5e-491a-aafc-2888686002f3",
+      "name": "When chat message received",
+      "webhookId": "66fd3305-2c10-4723-a543-f6f62778b764"
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "mode": "list",
+          "value": ""
+        },
+        "messages": {
+          "values": [
+            {}
+          ]
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.8,
+      "position": [
+        208,
+        0
+      ],
+      "id": "36acf275-01a2-4919-9718-13ffbda29f67",
+      "name": "Message a model",
+      "credentials": {
+        "openAiApi": {
+          "id": "i5Myn9kqddu3OAMJ",
+          "name": "OpenAi github"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "tags": [],
+  "triggerCount": 0,
+  "updatedAt": "2025-07-23T11:41:21.000Z",
+  "versionId": "426a2770-61e8-458f-9756-3684db4e9a1f"
+}
