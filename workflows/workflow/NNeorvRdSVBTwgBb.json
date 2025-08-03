@@ -1,0 +1,507 @@
+{
+  "active": false,
+  "connections": {
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Information Extractor",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OCR Space": {
+      "main": [
+        [
+          {
+            "node": "Information Extractor",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Invoice Drop": {
+      "main": [
+        [
+          {
+            "node": "Download Binary",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Information Extractor": {
+      "main": [
+        [
+          {
+            "node": "Append row in Invoice DB",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Append row in Invoice DB": {
+      "main": [
+        []
+      ]
+    },
+    "Download Binary": {
+      "main": [
+        [
+          {
+            "node": "OCR Space",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "createdAt": "2025-08-02T10:36:56.905Z",
+  "id": "NNeorvRdSVBTwgBb",
+  "isArchived": false,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "name": "Invoice processing",
+  "nodes": [
+    {
+      "parameters": {
+        "text": "={{ $json.ParsedResults[0].ParsedText }}",
+        "attributes": {
+          "attributes": [
+            {
+              "name": "Company Name",
+              "description": "name of the company that is sending the invoice"
+            },
+            {
+              "name": "Invoice Number",
+              "description": "the invoice number"
+            },
+            {
+              "name": "Items",
+              "description": "the name of the items mentioned"
+            },
+            {
+              "name": "Total Amount",
+              "description": "the total amount to be paid"
+            },
+            {
+              "name": "Invoice Date",
+              "type": "date",
+              "description": "the data invoice was sent"
+            },
+            {
+              "name": "Due Date",
+              "type": "date",
+              "description": "the date invoice is due"
+            }
+          ]
+        },
+        "options": {
+          "systemPromptTemplate": "You are an expert extraction algorithm.\nOnly extract relevant information from the text.\nIf you do not know the value of an attribute asked to extract, you may omit the attribute's value."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.informationExtractor",
+      "typeVersion": 1.2,
+      "position": [
+        720,
+        0
+      ],
+      "id": "b5158350-b343-4f64-aad5-c330a02230f6",
+      "name": "Information Extractor"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4.1-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        608,
+        208
+      ],
+      "id": "028d3531-ca6e-42a4-8be0-bcb05bd3baa1",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "i5Myn9kqddu3OAMJ",
+          "name": "OpenAi github"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.ocr.space/Parse/Image",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "K82555620688957"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "multipart-form-data",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "language",
+              "value": "eng"
+            },
+            {
+              "name": "isOverlayRequired",
+              "value": "false"
+            },
+            {
+              "parameterType": "formBinaryData",
+              "name": "file",
+              "inputDataFieldName": "data"
+            },
+            {
+              "name": "isTable",
+              "value": "true"
+            },
+            {
+              "name": "scale",
+              "value": "true"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        416,
+        0
+      ],
+      "id": "e8f295de-de83-484a-b5bc-2c00a1828981",
+      "name": "OCR Space"
+    },
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "triggerOn": "specificFolder",
+        "folderToWatch": {
+          "__rl": true,
+          "value": "1LUK4Uz8zuKOgU4H3iU0KZ3DW7j8MISBr",
+          "mode": "list",
+          "cachedResultName": "Invoices",
+          "cachedResultUrl": "https://drive.google.com/drive/folders/1LUK4Uz8zuKOgU4H3iU0KZ3DW7j8MISBr"
+        },
+        "event": "fileUpdated",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDriveTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "7283e403-90b5-41da-9396-b64cc4eb8c5b",
+      "name": "Invoice Drop",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "kwGqMMxYEEMUmuBp",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1D6oZslEiYyJS8rGJovPLGTzyVCZnEaKvTVOUJTscYT8",
+          "mode": "list",
+          "cachedResultName": "Invoice DB",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1D6oZslEiYyJS8rGJovPLGTzyVCZnEaKvTVOUJTscYT8/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1D6oZslEiYyJS8rGJovPLGTzyVCZnEaKvTVOUJTscYT8/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Company Name": "={{ $json.output['Company Name'] }}",
+            "Invoice Number": "={{ $json.output['Invoice Number'] }}",
+            "Items": "={{ $json.output.Items }}",
+            "Total Amount": "={{ $json.output['Total Amount'] }}",
+            "Invoice Date": "={{ $json.output['Invoice Date'] }}",
+            "Due Date": "={{ $json.output['Due Date'] }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Company Name",
+              "displayName": "Company Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Invoice Number",
+              "displayName": "Invoice Number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Items",
+              "displayName": "Items",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Total Amount",
+              "displayName": "Total Amount",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Invoice Date",
+              "displayName": "Invoice Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Due Date",
+              "displayName": "Due Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        1120,
+        0
+      ],
+      "id": "adc92c86-69ac-4466-979d-40f2b6895afa",
+      "name": "Append row in Invoice DB",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "ApTSfEPfh10fCHML",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": {
+          "__rl": true,
+          "value": "={{ $json.id }}",
+          "mode": "id"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        208,
+        0
+      ],
+      "id": "1d7858ab-4c36-4a5f-b6cf-cbb4b921d833",
+      "name": "Download Binary",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "kwGqMMxYEEMUmuBp",
+          "name": "Google Drive account"
+        }
+      }
+    }
+  ],
+  "pinData": {
+    "Invoice Drop": [
+      {
+        "json": {
+          "parents": [
+            "1LUK4Uz8zuKOgU4H3iU0KZ3DW7j8MISBr"
+          ],
+          "lastModifyingUser": {
+            "displayName": "Uvan Adhithya",
+            "kind": "drive#user",
+            "me": true,
+            "permissionId": "09061195631602142294",
+            "emailAddress": "uvanadhithya@gmail.com",
+            "photoLink": "https://lh3.googleusercontent.com/a/ACg8ocK2rGLVvRICZ-p5g1tIyNMd7xYecf0mmH9eiGYBRZjdb5JN9A=s64"
+          },
+          "owners": [
+            {
+              "displayName": "Uvan Adhithya",
+              "kind": "drive#user",
+              "me": true,
+              "permissionId": "09061195631602142294",
+              "emailAddress": "uvanadhithya@gmail.com",
+              "photoLink": "https://lh3.googleusercontent.com/a/ACg8ocK2rGLVvRICZ-p5g1tIyNMd7xYecf0mmH9eiGYBRZjdb5JN9A=s64"
+            }
+          ],
+          "permissions": [
+            {
+              "kind": "drive#permission",
+              "id": "09061195631602142294",
+              "type": "user",
+              "emailAddress": "uvanadhithya@gmail.com",
+              "role": "owner",
+              "displayName": "Uvan Adhithya",
+              "photoLink": "https://lh3.googleusercontent.com/a/ACg8ocK2rGLVvRICZ-p5g1tIyNMd7xYecf0mmH9eiGYBRZjdb5JN9A=s64",
+              "deleted": false,
+              "pendingOwner": false
+            }
+          ],
+          "spaces": [
+            "drive"
+          ],
+          "capabilities": {
+            "canAcceptOwnership": false,
+            "canAddChildren": false,
+            "canAddMyDriveParent": false,
+            "canChangeCopyRequiresWriterPermission": true,
+            "canChangeItemDownloadRestriction": true,
+            "canChangeSecurityUpdateEnabled": false,
+            "canChangeViewersCanCopyContent": true,
+            "canComment": true,
+            "canCopy": true,
+            "canDelete": true,
+            "canDisableInheritedPermissions": false,
+            "canDownload": true,
+            "canEdit": true,
+            "canEnableInheritedPermissions": true,
+            "canListChildren": false,
+            "canModifyContent": true,
+            "canModifyContentRestriction": true,
+            "canModifyEditorContentRestriction": true,
+            "canModifyOwnerContentRestriction": true,
+            "canModifyLabels": false,
+            "canMoveChildrenWithinDrive": false,
+            "canMoveItemIntoTeamDrive": true,
+            "canMoveItemOutOfDrive": true,
+            "canMoveItemWithinDrive": true,
+            "canReadLabels": false,
+            "canReadRevisions": true,
+            "canRemoveChildren": false,
+            "canRemoveContentRestriction": false,
+            "canRemoveMyDriveParent": true,
+            "canRename": true,
+            "canShare": true,
+            "canTrash": true,
+            "canUntrash": true
+          },
+          "permissionIds": [
+            "09061195631602142294"
+          ],
+          "linkShareMetadata": {
+            "securityUpdateEligible": false,
+            "securityUpdateEnabled": true
+          },
+          "downloadRestrictions": {
+            "itemDownloadRestriction": {
+              "restrictedForReaders": false,
+              "restrictedForWriters": false
+            },
+            "effectiveDownloadRestrictionWithContext": {
+              "restrictedForReaders": false,
+              "restrictedForWriters": false
+            }
+          },
+          "kind": "drive#file",
+          "id": "1ueV8WoHdNru2KPuoCP1opsh39sgkyjLV",
+          "name": "IN2025-26_036058.pdf",
+          "mimeType": "application/pdf",
+          "starred": false,
+          "trashed": false,
+          "explicitlyTrashed": false,
+          "version": "3",
+          "webContentLink": "https://drive.google.com/uc?id=1ueV8WoHdNru2KPuoCP1opsh39sgkyjLV&export=download",
+          "webViewLink": "https://drive.google.com/file/d/1ueV8WoHdNru2KPuoCP1opsh39sgkyjLV/view?usp=drivesdk",
+          "iconLink": "https://drive-thirdparty.googleusercontent.com/16/type/application/pdf",
+          "hasThumbnail": true,
+          "thumbnailLink": "https://lh3.googleusercontent.com/drive-storage/AJQWtBMAKwsMIKHSwY5_0UVO5pUKQ6Suk0DyJrqFkNMCC1vpusBniORA_7YNbl89traxe9N5RtK9vsZ7OlE_20RaRuf2dyfum4U-t9gGH0V1sPlODj4=s220",
+          "thumbnailVersion": "1",
+          "viewedByMe": true,
+          "viewedByMeTime": "2025-08-02T18:29:30.624Z",
+          "createdTime": "2025-08-02T18:29:30.624Z",
+          "modifiedTime": "2025-08-02T10:28:27.000Z",
+          "modifiedByMeTime": "2025-08-02T10:28:27.000Z",
+          "modifiedByMe": true,
+          "shared": false,
+          "ownedByMe": true,
+          "viewersCanCopyContent": true,
+          "copyRequiresWriterPermission": false,
+          "writersCanShare": true,
+          "originalFilename": "IN2025-26_036058.pdf",
+          "fullFileExtension": "pdf",
+          "fileExtension": "pdf",
+          "md5Checksum": "e912a781e2384789f12ae78667a069a7",
+          "sha1Checksum": "43faa6a1627c4ddc96a439646cc972bff3f1a525",
+          "sha256Checksum": "749a6461e7d3db4581721a71cf07eeb932d24ebfc8db90242dfd8f499e1cef7f",
+          "size": "123993",
+          "quotaBytesUsed": "123993",
+          "headRevisionId": "0B0RxETEbTQ80MUljelEvN21kNmxzelFoTVFzZCtqYUxUUkFzPQ",
+          "isAppAuthorized": false,
+          "inheritedPermissionsDisabled": false
+        }
+      }
+    ]
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "tags": [
+    {
+      "createdAt": "2025-08-03T12:03:41.665Z",
+      "updatedAt": "2025-08-03T12:03:41.665Z",
+      "id": "0UVjoEpjyUw5t6E1",
+      "name": "workflow"
+    }
+  ],
+  "triggerCount": 0,
+  "updatedAt": "2025-08-03T12:03:49.000Z",
+  "versionId": "c3c502ed-8c75-4874-b707-71664aa694fb"
+}
