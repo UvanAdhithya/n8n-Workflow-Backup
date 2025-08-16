@@ -1,0 +1,342 @@
+{
+  "active": false,
+  "connections": {
+    "Google Drive Trigger": {
+      "main": [
+        [
+          {
+            "node": "Download file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download file": {
+      "main": [
+        [
+          {
+            "node": "Pinecone Vector Store",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings OpenAI": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Pinecone Vector Store",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Default Data Loader": {
+      "ai_document": [
+        [
+          {
+            "node": "Pinecone Vector Store",
+            "type": "ai_document",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Knowledge base": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings OpenAI1": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Knowledge base",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "createdAt": "2025-08-16T10:44:35.661Z",
+  "id": "kzy8E9262mSp9Xk5",
+  "isArchived": false,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "name": "RAG Agent",
+  "nodes": [
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "triggerOn": "specificFolder",
+        "folderToWatch": {
+          "__rl": true,
+          "value": "1PNjRDNvillSbzEEK47_oupa6w2sC6OcH",
+          "mode": "list",
+          "cachedResultName": "FAX",
+          "cachedResultUrl": "https://drive.google.com/drive/folders/1PNjRDNvillSbzEEK47_oupa6w2sC6OcH"
+        },
+        "event": "fileCreated",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDriveTrigger",
+      "typeVersion": 1,
+      "position": [
+        -752,
+        80
+      ],
+      "id": "315555b2-0ac4-455a-a9ae-a357d4d5c8a0",
+      "name": "Google Drive Trigger",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "nMvprVioIqKS1PIh",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": {
+          "__rl": true,
+          "value": "={{ $json.id }}",
+          "mode": "id"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        -528,
+        80
+      ],
+      "id": "b007779b-9484-41ee-bc27-65a961828439",
+      "name": "Download file",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "nMvprVioIqKS1PIh",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "insert",
+        "pineconeIndex": {
+          "__rl": true,
+          "value": "rag-1536",
+          "mode": "list",
+          "cachedResultName": "rag-1536"
+        },
+        "options": {
+          "pineconeNamespace": "FAX"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStorePinecone",
+      "typeVersion": 1.3,
+      "position": [
+        -304,
+        -16
+      ],
+      "id": "4facd7bb-5b84-43e6-98a9-3bed94fa2be5",
+      "name": "Pinecone Vector Store",
+      "credentials": {
+        "pineconeApi": {
+          "id": "4JE2Dpk82MKWAbKz",
+          "name": "PineconeApi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": "=text-embedding-3-small",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        -272,
+        208
+      ],
+      "id": "5adc5b22-786e-4a3e-be46-ff576d5ea91e",
+      "name": "Embeddings OpenAI",
+      "credentials": {
+        "openAiApi": {
+          "id": "mL5vZg8fENOz8byu",
+          "name": "Open AI GitHub 4.1"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "dataType": "binary",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.documentDefaultDataLoader",
+      "typeVersion": 1.1,
+      "position": [
+        -144,
+        208
+      ],
+      "id": "598c086f-3390-427f-8897-0f6ccd58b795",
+      "name": "Default Data Loader"
+    },
+    {
+      "parameters": {
+        "options": {
+          "systemMessage": "Use knowledge base to answer queries"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.1,
+      "position": [
+        480,
+        -32
+      ],
+      "id": "4ffc651e-45e8-4466-ad07-a3c1a460fa61",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        240,
+        -32
+      ],
+      "id": "a1354a25-3876-4f65-ad32-c316eb291c0d",
+      "name": "When chat message received",
+      "webhookId": "94d76a71-a8bb-43cc-82fe-3c017a061355"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4.1-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        464,
+        192
+      ],
+      "id": "fab3b8f1-915f-4ae6-86f3-a03c5f5829b4",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "mL5vZg8fENOz8byu",
+          "name": "Open AI GitHub 4.1"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "retrieve-as-tool",
+        "toolDescription": "Call this tool to describe queries from the document",
+        "pineconeIndex": {
+          "__rl": true,
+          "value": "rag-1536",
+          "mode": "list",
+          "cachedResultName": "rag-1536"
+        },
+        "topK": 5,
+        "options": {
+          "pineconeNamespace": "FAX"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStorePinecone",
+      "typeVersion": 1.3,
+      "position": [
+        592,
+        192
+      ],
+      "id": "e01e0e7c-ae2a-4d85-8ef0-0dc4a5c98e85",
+      "name": "Knowledge base",
+      "credentials": {
+        "pineconeApi": {
+          "id": "4JE2Dpk82MKWAbKz",
+          "name": "PineconeApi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        688,
+        400
+      ],
+      "id": "cf168493-1b84-476a-bcb8-3419e7b38f59",
+      "name": "Embeddings OpenAI1",
+      "credentials": {
+        "openAiApi": {
+          "id": "mL5vZg8fENOz8byu",
+          "name": "Open AI GitHub 4.1"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "tags": [
+    {
+      "createdAt": "2025-08-16T10:44:49.650Z",
+      "updatedAt": "2025-08-16T10:44:49.650Z",
+      "id": "jEQ6NbFVlOfJ9CGN",
+      "name": "AI Agent"
+    }
+  ],
+  "triggerCount": 0,
+  "updatedAt": "2025-08-16T10:44:51.000Z",
+  "versionId": "fad8ac0f-deea-4a3f-8f08-c4a537a93b05"
+}
